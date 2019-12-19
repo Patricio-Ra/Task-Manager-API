@@ -12,7 +12,10 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
 
     const db = client.db(dbName);
     
-    // db.collection('users').insertOne({
+    const users = db.collection('users');
+    const tasks = db.collection('tasks');
+
+    // users.insertOne({
     //     name: 'Patanego',
     //     age: 13*7
     // }, (error, result) => {
@@ -22,7 +25,7 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     //     console.log(result.ops);
     // });
 
-    // db.collection('users').insertMany([
+    // users.insertMany([
     //     {
     //         name: 'Papá',
     //         age: 63
@@ -35,9 +38,26 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     //     if (error) {
     //         return console.log('Unable to insert documents (users).', error);
     //     };
-
     //     console.log(result.ops);
     // });
 
-
+    tasks.insertMany([
+        {
+            description: 'Finish Node.js course',
+            completed: false
+        },
+        {
+            description: 'Finish C# and JS Vanilla courses',
+            completed: true
+        },
+        {
+            description: 'Finish Accenture Academy and SQL basics',
+            completed: true
+        }
+    ], (error, result) => {
+        if (error) {
+            console.log('Unable to insert documents (tasks).', error);
+        };
+        console.log(result.ops);
+    });
 });
