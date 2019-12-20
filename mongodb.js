@@ -1,9 +1,18 @@
-const mongodb = require('mongodb');
+// const mongodb = require('mongodb');
+// const MongoClient = mongodb.MongoClient;
+// const ObjectID = mongodb.ObjectID;
 
-const MongoClient = mongodb.MongoClient;
-
+const { MongoClient, ObjectID } = require('mongodb');
 const connectionURL = 'mongodb://127.0.0.1:27017';
 const dbName = 'task-manager';
+
+const id = new ObjectID();
+console.log(id);
+console.log(id.id);
+console.log(id.id.length);
+console.log(id.toHexString().length);
+console.log(id.getTimestamp());
+
 
 MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
     if (error) {
@@ -41,23 +50,24 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     //     console.log(result.ops);
     // });
 
-    tasks.insertMany([
-        {
-            description: 'Finish Node.js course',
-            completed: false
-        },
-        {
-            description: 'Finish C# and JS Vanilla courses',
-            completed: true
-        },
-        {
-            description: 'Finish Accenture Academy and SQL basics',
-            completed: true
-        }
-    ], (error, result) => {
-        if (error) {
-            console.log('Unable to insert documents (tasks).', error);
-        };
-        console.log(result.ops);
-    });
+    // tasks.insertMany([
+    //     {
+    //         description: 'Finish Node.js course',
+    //         completed: false
+    //     },
+    //     {
+    //         description: 'Finish C# and JS Vanilla courses',
+    //         completed: true
+    //     },
+    //     {
+    //         description: 'Finish Accenture Academy and SQL basics',
+    //         completed: true
+    //     }
+    // ], (error, result) => {
+    //     if (error) {
+    //         console.log('Unable to insert documents (tasks).', error);
+    //     };
+    //     console.log(result.ops);
+    // });
+
 });
