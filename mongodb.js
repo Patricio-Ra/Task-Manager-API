@@ -3,16 +3,9 @@
 // const ObjectID = mongodb.ObjectID;
 
 const { MongoClient, ObjectID } = require('mongodb');
+
 const connectionURL = 'mongodb://127.0.0.1:27017';
 const dbName = 'task-manager';
-
-const id = new ObjectID();
-console.log(id);
-console.log(id.id);
-console.log(id.id.length);
-console.log(id.toHexString().length);
-console.log(id.getTimestamp());
-
 
 MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
     if (error) {
@@ -24,50 +17,39 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     const users = db.collection('users');
     const tasks = db.collection('tasks');
 
-    // users.insertOne({
-    //     name: 'Patanego',
-    //     age: 13*7
-    // }, (error, result) => {
+    // users.findOne({ _id: new ObjectID("5dfaccba579afa1350f92520")}, (error, user) => {
     //     if (error) {
-    //         return console.log('Unable to insert document (user).', error);
+    //         return console.log('Unable to fetch.', error);
     //     };
-    //     console.log(result.ops);
+    //     console.log(user);
     // });
 
-    // users.insertMany([
-    //     {
-    //         name: 'Papá',
-    //         age: 63
-    //     },
-    //     {
-    //         name: 'Mama',
-    //         age: 60
-    //     }
-    // ], (error, result) => {
+    // users.find({ age: 31 }).toArray((error, users) => {
     //     if (error) {
-    //         return console.log('Unable to insert documents (users).', error);
+    //         return console.log('Unable to fetch.', error);
     //     };
-    //     console.log(result.ops);
+    //     console.log(users);
     // });
 
-    // tasks.insertMany([
-    //     {
-    //         description: 'Finish Node.js course',
-    //         completed: false
-    //     },
-    //     {
-    //         description: 'Finish C# and JS Vanilla courses',
-    //         completed: true
-    //     },
-    //     {
-    //         description: 'Finish Accenture Academy and SQL basics',
-    //         completed: true
-    //     }
-    // ], (error, result) => {
+    // users.find({ age: 31 }).count((error, count) => {
     //     if (error) {
-    //         console.log('Unable to insert documents (tasks).', error);
+    //         return console.log('Unable to fetch.', error);
     //     };
-    //     console.log(result.ops);
+    //     console.log(count);
+    // });
+
+    // tasks.findOne({_id: new ObjectID("5dfbf2141431bd52a836159c")}, (error, task) => {
+    //     if (error) {
+    //         return console.log(error);
+    //     };
+    //     console.log(task);
+    // });
+
+    // tasks.find({completed: false}).toArray((error, tasks) => {
+    //     if (error) {
+    //         return console.log(error);
+    //     };
+    //     console.log(tasks);
     // });
 
 });
