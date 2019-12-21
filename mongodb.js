@@ -17,15 +17,5 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     const users = db.collection('users');
     const tasks = db.collection('tasks');
 
-    users.deleteMany({ age: { $lte: 30 } }).then((result) => {
-        console.log(result);
-    }).catch((error) => {
-        console.log(error);
-    });
-
-    // tasks.deleteOne({description: 'asd'}).then((result) => {
-    //     console.log(result);
-    // }).catch((error) => {
-    //     console.log(error);
-    // });
+    
 });
