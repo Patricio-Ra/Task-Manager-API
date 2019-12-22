@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 // Configs.
 app.use(express.json());
 
-// Creates.
+// Endpoints: CREATE.
 app.post('/users', (req, res) => {
     const user = new User(req.body);
     user.save().then(user => {
@@ -25,6 +25,29 @@ app.post('/tasks', (req, res) => {
         res.status(201).send(task);
     }).catch(e => {
         res.status(400).send(e);
+    });
+});
+
+// Endpoints: READ ALL.
+app.get('/users', (req, res) => {
+    User.find({}).then(users => {
+        res.send(users);
+    }).catch(e => {
+        res.status(500).send();
+    });
+});
+
+
+// Endpoints: READ ONE.
+app.get('/users/:id', (req, res) => {
+    const _id = req.params.id;
+    User.findById(_id).then(user => {
+        if (!user) {
+            return res.status(404).send();
+        };
+        res.send(user);
+    }).catch(e => {
+        res.status(500).send();
     });
 });
 
