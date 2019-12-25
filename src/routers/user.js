@@ -42,10 +42,16 @@ router.patch('/users/:id', async (req, res) => {
     };
 
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
+        const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).send();
         };
+        
+        for (const update of updates) {
+            user[update] = req.body[update];
+        };
+        await user.save();
+        // const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true}); removed to use Middleware in Model's Schema.
         res.send(user);
     } catch (e) {
         res.status(400).send(e);
