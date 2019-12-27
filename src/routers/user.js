@@ -4,6 +4,7 @@ const auth = require('../middleware/auth');
 const router = new express.Router();
 
 // Public routes
+// Create User.
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
     try {
@@ -14,8 +15,8 @@ router.post('/users', async (req, res) => {
     };
 });
 
+// Login User.
 router.post('/users/login', async (req, res) => {
-    debugger;
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);
         const token = await user.generateAuthTokenAndSave();
@@ -26,6 +27,29 @@ router.post('/users/login', async (req, res) => {
 });
 
 // Auth routes.
+// Logout User.
+router.post('/users/logout', auth, async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter(token => token.token !== req.token);
+        await req.user.save();
+        res.send();
+    } catch (e) {
+        res.status(500).send();
+    };
+});
+
+// Logout All Users.
+router.post('/users/logoutAll', auth, async (req, res) => {
+    try {
+        req.user.tokens = [];
+        await req.user.save();
+        res.send();
+    } catch (e) {
+        res.status(500).send();
+    };
+});
+
+
 router.get('/users/me', auth, async (req, res) => {
     res.send(req.user);
 });
