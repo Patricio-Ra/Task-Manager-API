@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
+// Schema.
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -39,10 +41,30 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Password cannot contain "password".');
             };
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 });
 
 
+// Document's custom methods.
+// Generates Auth Token and Saves the Document.
+userSchema.methods.generateAuthTokenAndSave = async function () {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString() }, 'thisismytaskapplication');
+    
+    user.tokens = [...user.tokens, { token }];
+    await user.save();
+    return token;
+};
+
+
+// Model's custom methods.
+// Gets a Document by its Credentials (so Checks if its valid).
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email });
     if (!user) {
@@ -57,6 +79,8 @@ userSchema.statics.findByCredentials = async (email, password) => {
     return user;
 };
 
+
+//Middleware
 // Hash the plain-text password before saving.
 userSchema.pre('save', async function (next) {
     const user = this;
