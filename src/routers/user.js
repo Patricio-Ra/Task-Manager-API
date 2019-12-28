@@ -49,7 +49,7 @@ router.post('/users/logoutAll', auth, async (req, res) => {
     };
 });
 
-
+// Get User.
 router.get('/users/me', auth, async (req, res) => {
     res.send(req.user);
 });
@@ -66,6 +66,7 @@ router.get('/users/:id', async (req, res) => {
     };
 });
 
+// Update User.
 router.patch('/users/:id', async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'age', 'email', 'password'];
@@ -91,6 +92,7 @@ router.patch('/users/:id', async (req, res) => {
     };
 });
 
+// Delete User.
 router.delete('/users/:id', async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);

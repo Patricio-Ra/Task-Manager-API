@@ -62,6 +62,14 @@ userSchema.methods.generateAuthTokenAndSave = async function () {
     return token;
 };
 
+// .toJSON Middleware: Get Public User Profile.
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.tokens;
+    return userObject;
+};
 
 // Model's custom methods.
 // Gets a Document by its Credentials (so Checks if its valid).
@@ -80,7 +88,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 };
 
 
-//Middleware
+// Middleware
 // Hash the plain-text password before saving.
 userSchema.pre('save', async function (next) {
     const user = this;
@@ -91,6 +99,7 @@ userSchema.pre('save', async function (next) {
 
     next();
 });
+
 
 const User = mongoose.model('User', userSchema);
 
