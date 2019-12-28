@@ -51,6 +51,13 @@ const userSchema = new mongoose.Schema({
 });
 
 
+// Virtual Field for the Tasks relationship.
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+});
+
 // Document's custom methods.
 // Generates Auth Token and Saves the Document.
 userSchema.methods.generateAuthTokenAndSave = async function () {
