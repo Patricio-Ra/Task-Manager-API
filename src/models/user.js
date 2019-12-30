@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Task = require('./task');
 
 // Schema.
 const userSchema = new mongoose.Schema({
@@ -51,7 +52,7 @@ const userSchema = new mongoose.Schema({
 });
 
 
-// Virtual Field for the Tasks relationship.
+// Virtual Property for the Tasks relationship.
 userSchema.virtual('tasks', {
     ref: 'Task',
     localField: '_id',
@@ -104,6 +105,13 @@ userSchema.pre('save', async function (next) {
         user.password = await bcrypt.hash(user.password, 8);
     };
 
+    next();
+});
+
+// Delete user tasks when user is removed.
+userSchema.pre('remove', async function (next) {
+    const user = this;
+    await Task.deleteMany({ owner: user._id });
     next();
 });
 
