@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Task = require('./task');
 
 // Schema.
 const userSchema = new mongoose.Schema({
@@ -51,6 +52,13 @@ const userSchema = new mongoose.Schema({
 });
 
 
+// Virtual Property for the Tasks relationship.
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+});
+
 // Document's custom methods.
 // Generates Auth Token and Saves the Document.
 userSchema.methods.generateAuthTokenAndSave = async function () {
@@ -62,6 +70,14 @@ userSchema.methods.generateAuthTokenAndSave = async function () {
     return token;
 };
 
+// .toJSON Middleware: Get Public User Profile.
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.tokens;
+    return userObject;
+};
 
 // Model's custom methods.
 // Gets a Document by its Credentials (so Checks if its valid).
@@ -80,7 +96,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 };
 
 
-//Middleware
+// Middleware
 // Hash the plain-text password before saving.
 userSchema.pre('save', async function (next) {
     const user = this;
@@ -91,6 +107,14 @@ userSchema.pre('save', async function (next) {
 
     next();
 });
+
+// Delete user tasks when user is removed.
+userSchema.pre('remove', async function (next) {
+    const user = this;
+    await Task.deleteMany({ owner: user._id });
+    next();
+});
+
 
 const User = mongoose.model('User', userSchema);
 
