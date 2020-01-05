@@ -1,7 +1,7 @@
 const express = require('express');
 const User = require('../models/user');
 const auth = require('../middleware/auth');
-const multer = require('multer');
+const uploadAvatar = require('../middleware/uploadAvatar');
 const router = new express.Router();
 
 // Public routes
@@ -84,41 +84,25 @@ router.delete('/users/me', auth, async (req, res) => {
     };
 });
 
-// Upload Avatar route.
-// Multer Upload Avatar Config.
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//     cb(null, 'resources/avatars');
-//     },
-//     filename: function (req, file, cb) {
-//     cb(null, `${file.fieldname}-${Date.now()}`);
-//     }
-// });
-
-const uploadAvatar = multer({
-    storage: multer.diskStorage({
-        destination: function (req, file, cb) {
-        cb(null, 'resources/avatars')
-        },
-        filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
-        }
-    }),
-    limits: { fileSize: 1 * 1024 * 1024 },
-    fileFilter(req, file, cb) {
-        const mimeTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png', 'image/bmp'];
-        if (!mimeTypes.includes(file.mimetype)) {
-            return cb(new Error('File not compatible'));
-        };
-        if (!file.originalname.match(/\.(jpg|jpeg|png|bmp|gif)$/)) {
-            return cb(new Error('File not compatible'));
-        };
-        cb(undefined, true);
-        // cb(undefined, false);
-    }
-});
-router.post('/users/me/avatar', uploadAvatar.single('avatar'), (req, res) => {
+// Upload Avatar.
+router.post('/users/me/avatar', auth, uploadAvatar, async (req, res) => {
+    req.user.avatar = req.file.buffer;
+    await req.user.save();
     res.send();
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
 });
+
+// Delete Avatar.
+router.delete('/users/me/avatar', auth, async (req, res) => {
+    try {
+        req.user.avatar = null;
+        await req.user.save();
+        res.send();
+    } catch (e) {
+        res.status(500).send();
+    };
+});
+
 
 module.exports = router;
