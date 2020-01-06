@@ -84,7 +84,8 @@ router.delete('/users/me', auth, async (req, res) => {
     };
 });
 
-// Upload Avatar.
+
+// Upload User Avatar.
 router.post('/users/me/avatar', auth, uploadAvatar, async (req, res) => {
     req.user.avatar = req.file.buffer;
     await req.user.save();
@@ -93,7 +94,21 @@ router.post('/users/me/avatar', auth, uploadAvatar, async (req, res) => {
     res.status(400).send({ error: error.message });
 });
 
-// Delete Avatar.
+// Get User Avatar.
+router.get('/users/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user.avatar) {
+            throw new Error();
+        };
+        res.set('Content-Type', 'image/jpg');
+        res.send(user.avatar);
+    } catch (e) {
+        res.status(404).send();
+    };
+});
+
+// Delete User Avatar.
 router.delete('/users/me/avatar', auth, async (req, res) => {
     try {
         req.user.avatar = null;
