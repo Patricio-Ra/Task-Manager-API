@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../models/user');
 const auth = require('../middleware/auth');
 const uploadAvatar = require('../middleware/uploadAvatar');
+const sharp = require('sharp');
 const router = new express.Router();
 
 // Public routes
@@ -87,7 +88,8 @@ router.delete('/users/me', auth, async (req, res) => {
 
 // Upload User Avatar.
 router.post('/users/me/avatar', auth, uploadAvatar, async (req, res) => {
-    req.user.avatar = req.file.buffer;
+    const buffer = await sharp(req.file.buffer).resize({ width: 300, height: 300 }).png().toBuffer();
+    req.user.avatar = buffer;
     await req.user.save();
     res.send();
 }, (error, req, res, next) => {
@@ -101,7 +103,7 @@ router.get('/users/:id/avatar', async (req, res) => {
         if (!user.avatar) {
             throw new Error();
         };
-        res.set('Content-Type', 'image/jpg');
+        res.set('Content-Type', 'image/png');
         res.send(user.avatar);
     } catch (e) {
         res.status(404).send();
