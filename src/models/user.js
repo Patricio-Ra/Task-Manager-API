@@ -3,6 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Task = require('./task');
+const { sendCancelationEmail } = require('../services/emails');
 
 // Schema.
 const userSchema = new mongoose.Schema({
@@ -72,7 +73,6 @@ userSchema.virtual('tasks', {
 userSchema.methods.generateAuthTokenAndSave = async function () {
     const user = this;
     const token = jwt.sign({ _id: user._id.toString() }, 'thisismytaskapplication');
-    
     user.tokens = [...user.tokens, { token }];
     await user.save();
     return token;
@@ -117,10 +117,11 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-// Delete user tasks when user is removed.
+// Delete user tasks and send cancelation email when user is removed.
 userSchema.pre('remove', async function (next) {
     const user = this;
     await Task.deleteMany({ owner: user._id });
+    sendCancelationEmail(req.user.email, req.user.name);
     next();
 });
 

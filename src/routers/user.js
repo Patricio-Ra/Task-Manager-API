@@ -3,14 +3,21 @@ const User = require('../models/user');
 const auth = require('../middleware/auth');
 const uploadAvatar = require('../middleware/uploadAvatar');
 const sharp = require('sharp');
+const { sendWelcomeEmail, sendCancelationEmail } = require('../services/emails');
 const router = new express.Router();
 
 // Public routes
 // Create User.
 router.post('/users', async (req, res) => {
-    const user = new User(req.body);
+    const allowedFields = ['name', 'age', 'email', 'password'];
+    const isValidOperation = Object.keys(req.body).some(field => !allowedFields.includes(field));
+    if (isValidOperation) {
+        res.status(400).send('Invalid data within.');
+    };
     try {
+        const user = new User(req.body);
         const token = await user.generateAuthTokenAndSave();
+        sendWelcomeEmail(user.email, user.name);
         res.status(201).send({ user, token });
     } catch (e) {
         res.status(400).send(e);
