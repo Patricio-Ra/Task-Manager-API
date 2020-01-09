@@ -3,7 +3,7 @@ const User = require('../models/user');
 const auth = require('../middleware/auth');
 const uploadAvatar = require('../middleware/uploadAvatar');
 const sharp = require('sharp');
-const { sendWelcomeEmail, sendCancelationEmail } = require('../services/emails');
+const { sendWelcomeEmail } = require('../services/emails');
 const router = new express.Router();
 
 // Public routes
