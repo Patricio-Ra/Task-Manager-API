@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Task = require('./task');
+const { sendCancelationEmail } = require('../services/emails');
 
 // Schema.
 const userSchema = new mongoose.Schema({
@@ -47,21 +49,44 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    avatar: {
+        type: Buffer
+    },
+    avatarType: {
+        type: String
+    }
+}, {
+    timestamps: true
 });
 
+
+// Virtual Property for the Tasks relationship.
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+});
 
 // Document's custom methods.
 // Generates Auth Token and Saves the Document.
 userSchema.methods.generateAuthTokenAndSave = async function () {
     const user = this;
-    const token = jwt.sign({ _id: user._id.toString() }, 'thisismytaskapplication');
-    
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
     user.tokens = [...user.tokens, { token }];
     await user.save();
     return token;
 };
 
+// .toJSON Middleware: Get Public User Profile.
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.tokens;
+    delete userObject.avatar;
+    return userObject;
+};
 
 // Model's custom methods.
 // Gets a Document by its Credentials (so Checks if its valid).
@@ -80,7 +105,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 };
 
 
-//Middleware
+// Middleware
 // Hash the plain-text password before saving.
 userSchema.pre('save', async function (next) {
     const user = this;
@@ -91,6 +116,15 @@ userSchema.pre('save', async function (next) {
 
     next();
 });
+
+// Delete user tasks and send cancelation email when user is removed.
+userSchema.pre('remove', async function (next) {
+    const user = this;
+    await Task.deleteMany({ owner: user._id });
+    sendCancelationEmail(user.email, user.name);
+    next();
+});
+
 
 const User = mongoose.model('User', userSchema);
 
