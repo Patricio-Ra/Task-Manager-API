@@ -6,7 +6,7 @@ sgMail.setApiKey(process.env.SG_API_KEY);
 const sendWelcomeEmail = (email, name) => {
     const msg = {
         to: email,
-        from: 'patricio.raschetti@gmail.com',
+        from: 'patricio.raschetti@thetaskapp.com',
         subject: 'Welcome to the Task app!',
         html: 
             `<html>
@@ -29,7 +29,7 @@ const sendWelcomeEmail = (email, name) => {
 const sendCancelationEmail = (email, name) => {
     const msg = {
         to: email,
-        from: 'patricio.raschetti@gmail.com',
+        from: 'patricio.raschetti@thetaskapp.com',
         subject: 'Sorry to see you go!',
         html: 
             `<html>
