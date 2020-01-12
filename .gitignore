@@ -2,4 +2,7 @@ others
 node_modules
 images
 dev.env
+test.env
 Task-Manager-API-(dev).postman_environment.json
+math.test.js
+math.js
