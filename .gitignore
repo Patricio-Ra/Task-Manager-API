@@ -1,5 +1,4 @@
-others
 node_modules
-images
 dev.env
+test.env
 Task-Manager-API-(dev).postman_environment.json
