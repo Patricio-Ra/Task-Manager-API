@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-node_modules
-dev.env
-test.env
-=======
 dev.env
 test.env
 node_modules
->>>>>>> 8fa2e3c1127ee9e0f730ac69b3f50401a3b66aeb
 Task-Manager-API-(dev).postman_environment.json
