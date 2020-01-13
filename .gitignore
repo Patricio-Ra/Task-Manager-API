@@ -1,7 +1,4 @@
 dev.env
 test.env
 node_modules
-images
 Task-Manager-API-(dev).postman_environment.json
-math.test.js
-math.js
