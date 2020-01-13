@@ -3,7 +3,7 @@ const User = require('../models/user');
 const auth = require('../middleware/auth');
 const uploadAvatar = require('../middleware/uploadAvatar');
 const sharp = require('sharp');
-const { sendWelcomeEmail } = require('../services/emails');
+const { sendWelcomeEmail, sendCancelationEmail } = require('../services/emails');
 const router = new express.Router();
 
 // Public routes
@@ -86,6 +86,7 @@ router.patch('/users/me', auth, async (req, res) => {
 router.delete('/users/me', auth, async (req, res) => {
     try {
         await req.user.remove();
+        sendCancelationEmail(req.user.email, req.user.name);
         res.send(req.user);
     } catch (e) {
         res.status(500).send();
