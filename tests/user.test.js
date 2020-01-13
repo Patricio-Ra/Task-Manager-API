@@ -1,28 +1,10 @@
 const request = require('supertest');
 const app = require('../src/app');
 const User = require('../src/models/user');
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+const { userOneId, userOne, setupDatabase } = require('./fixtures/db');
 
-
-// Life-cicle variables.
-const userOneId = new mongoose.Types.ObjectId();
-const userOne = {
-    _id: userOneId,
-    name: 'Test User',
-    email: 'testuser@example.com',
-    password: 'SomeTestingPasssword22',
-    tokens: [{
-        token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
-    }]
-};
-
-// Life-cicle methods.
-beforeEach(async () => {
-    await User.deleteMany();
-    await new User(userOne).save();
-});
-
+// Life-cicle method.
+beforeEach(setupDatabase);
 
 // Singup tests.
 test('Should singup a new user', async () => {
@@ -52,7 +34,7 @@ test('Should login existing user', async () => {
             email: userOne.email,
             password: userOne.password
         }).expect(200);
-    const user = await User.findById(response.body.user._id);
+    const user = await User.findById(userOneId);
     expect(response.body.token).toBe(user.tokens[1].token);
 });
 
@@ -131,9 +113,10 @@ test('Should update valid user fields', async () => {
 });
 
 test('Should not update invalid users fields', async () => {
-    await request(app)
+    const response = await request(app)
         .patch('/users/me')
         .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
         .send({ nonExistingField: 'SomeValue' })
         .expect(400);
+    expect(response.body.error).toEqual('Invalid update within.');
 });
