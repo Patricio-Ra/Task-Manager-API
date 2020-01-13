@@ -1,9 +1,17 @@
 const request = require('supertest');
 const app = require('../src/app');
 const User = require('../src/models/user');
-const { userOneId, userOne, setupDatabase } = require('./fixtures/db');
+const {
+    userOneId,
+    userTwoId,
+    userOne,
+    userTwo,
+    taskOne,
+    taskTwo,
+    taskThree,
+    setupDatabase
+} = require('./fixtures/db');
 
-// Life-cicle method.
 beforeEach(setupDatabase);
 
 // Singup tests.
