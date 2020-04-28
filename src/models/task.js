@@ -3,7 +3,7 @@ const validator = require('validator');
 
 const taskSchema = new mongoose.Schema({
     description: {
-        type: String, 
+        type: String,
         trim: true,
         required: true
     },
